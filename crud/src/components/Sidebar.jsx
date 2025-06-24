@@ -8,6 +8,7 @@ const Sidebar = ({ setCurrentPage }) => {
             </div>
             <div className="sidebar-content">
             <ul className="sidebar-menu">
+                <li onClick={() => setCurrentPage('usuarios')}>Gerenciamento de Usuarios</li>
                 <li onClick={() => setCurrentPage('clientes')}>Cadastro de Clientes</li>
                 <li onClick={()=> setCurrentPage("produtos")}>Cadastro de Produtos</li>
                 <li>Cadastro de Servicos</li>
