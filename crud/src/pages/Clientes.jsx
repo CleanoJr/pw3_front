@@ -1,17 +1,20 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import api from '../api/axiosConfig'; // Importando a configuração do axios
 function Clientes() {
+
 
   /// metodo para carrer on load
   useEffect(()=>{
-    getAllUser()
-  });
+    getAllClients();
+  },[]);
   /// dados do formulário
   const [dadosCliente,setDadosClient] = React.useState({
     name:"",
-    email:"",
-    password:""
+    adress:"",
+    cpf:"",
+    id:""
   });
 
   //resultado da consulta
@@ -28,47 +31,104 @@ function Clientes() {
   //chamando back-and para criar um dado
   const saveData = async (e)  =>{
     e.preventDefault();
-    const resposta = await axios.post('http://localhost:3000/user/add',
+
+    if (dadosCliente.id =="") {
+
+    const resposta = await api.post('/clientes',
       dadosCliente).then((res)=>{
-        if (res.status == 200){
+        console.log(res);
+        if (res.status == 201){
           setDadosClient({
               name:"",
-              email:"",
-              password:""
+              adress:"",
+              cpf:""
           });
 
           alert("Salvo com sucesso");
         }
-      }  ).catch((res)=>{
-       // console.log(res);
+      }
+    
+    ).catch((res)=>{
+        console.log(res);
         if (res.response) {
-        alert("Erro " + res.response.data.msg);
+        alert("Erro " + res.response.data.message);
         } else{
           alert("Erro " );
         }
       });
-      getAllUser();
+    } else{
+
+
+       const resposta = await api.put('/cliente/'+dadosCliente.id,
+      dadosCliente).then((res)=>{
+        console.log(res);
+        if (res.status == 200){
+          setDadosClient({
+              name:"",
+              adress:"",
+              cpf:"",
+              id:""
+          });
+          alert("Salvo com sucesso");
+        }
+      }
+    
+    ).catch((res)=>{
+        console.log(res);
+        if (res.response) {
+        alert("Erro " + res.response.data.message);
+        } else{
+          alert("Erro " );
+        }
+      });
+
+
+
+          
+    }
+      getAllClients();
   }
 
   // chamando backand para trazer todos os usuários
-  const getAllUser = async (e)=>{
-    const consulta = await axios.get("http://localhost:3000/user/all");
-    setResultado(consulta.data);
-    console.log(consulta.data);
+  const getAllClients = async (e)=>{
+    const consulta = await api.get("/clientes");
+    setResultado(consulta.data.clientes);
+  }
+
+  const functionEdit = async (e)=>{
+     const getClient = await api.get("/cliente/"+e).then((res)=>{
+      //console.log(res.data.cliente);
+      setDadosClient({
+        name:res.data.cliente.name,
+        adress:res.data.cliente.adress,
+        cpf:res.data.cliente.cpf,
+        id: res.data.cliente.id
+      });
+
+     }).catch((res)=>{
+        console.log(res);
+
+     });  
+
+      alert("chegou aqy"+e);
+
   }
 
   // chamando backend para remover um usuário
   const removeFunct =  async (e)=>{
 
+    if (!window.confirm("Deseja realmente excluir este cliente?")) {
+      return;
+    }
+
     try {
-     const callDelete = axios.delete("http://localhost:3000/user/delete/"+e).then(
+     const callDelete = api.delete("/cliente/"+e).then(
       (res)=>{
         alert("Apagado com sucesso!!");
-        getAllUser()
+        getAllClients()
       }
      )
-
-     alert("ta excluido " + e)
+  
     }catch(e){
       alert(e);
     }
@@ -85,23 +145,24 @@ function Clientes() {
         <br></br>
         <input type="text" name="name" required placeholder="Nome" value={dadosCliente.name} onChange={inputData}></input>
         <br></br>
-        Email:
+        Endereço:
         <br></br>
-        <input type="email" name="email" required placeholder="E-mail" value={dadosCliente.email} onChange={inputData}></input>
+        <input type="text" name="adress" required placeholder="Endereço" value={dadosCliente.adress} onChange={inputData}></input>
         <br></br>
-        Senha
+        CPF
         <br></br>
-        <input type="password" name="password" required placeholder="Senha" value={dadosCliente.password} onChange={inputData}></input>
+        <input type="text" name="cpf" required placeholder="CPF" value={dadosCliente.cpf} onChange={inputData}></input>
         <br></br>
         <button type="submit">Enviar</button>
-        <button type="button" onClick={getAllUser}>Listar</button>
+        <button type="button" onClick={getAllClients}>Listar</button>
         <div className="tabela"> 
 
           <table style={{ border:1 , borderStyle:"double"}}>
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>Email</th>
+                <th>Endereço</th>
+                <th>CPF</th>
                 <th>Editar</th>
                 <th>Excluir</th>
               </tr>
@@ -110,10 +171,13 @@ function Clientes() {
               {resultado && resultado.map((cliente, index) => (
                     <tr key={index}>
                         <td>{cliente.name}</td>
-                        <td>{cliente.email}</td>
-                        <td>{cliente.password}</td>
+                        <td>{cliente.adress}</td>
+                        <td>{cliente.cpf}</td>
                        
-                        <td><button type="button">Editar</button></td>
+                        <td><button type="button"  onClick={(e)=>{
+                          functionEdit(cliente.id)
+
+                        }}>Editar</button></td>
                         <td><button type="button" 
                         onClick={(e)=>{
                           removeFunct(cliente.id)
