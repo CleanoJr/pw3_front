@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://44.210.90.61:3000/v1',
+  baseURL: 'http://44.210.90.61:8080/v1',
 });
 
 // Interceptor para adicionar o token automaticamente
