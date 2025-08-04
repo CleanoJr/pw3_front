@@ -3,6 +3,7 @@ import './App.css'
 import Sidebar from './components/Sidebar'
 import Clientes from './pages/Clientes'
 import Produtos from './pages/Produtos'
+import Servicos from './pages/Servicos'
 import Login from './components/Login'
 
 function App() {
@@ -16,6 +17,9 @@ function App() {
     }
     if (currentPage=="produtos"){
       return <Produtos/>
+    }
+    if (currentPage=="servicos"){
+      return <Servicos/>
     }
   }
 
