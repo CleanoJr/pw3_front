@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import api from '../api/axiosConfig'; // Importando a configuração do axios
-function Clientes() {
+function Servicos() {
 
 
   /// metodo para carrer on load
@@ -91,8 +91,8 @@ function Clientes() {
 
   // chamando backand para trazer todos os usuários
   const getAllClients = async (e)=>{
-    const consulta = await api.get("/clientes");
-    setResultado(consulta.data.clientes);
+    const consulta = await api.get("/servicos");
+    setResultado(consulta.data.servicos);
   }
 
   const functionEdit = async (e)=>{
@@ -137,19 +137,19 @@ function Clientes() {
   // pagina
     return(
          <div className="page-content">
-      <h1>Gerenciamento de Clientes</h1>
+      <h1>Gerenciamento de Serviços</h1>
       
 
       <form onSubmit={saveData}>
-        Nome:
+        Codigo:
         <br></br>
-        <input type="text" name="name" required placeholder="Nome" value={dadosCliente.name} onChange={inputData}></input>
+        <input type="text" name="name" required placeholder="Código do Serviço" value={dadosCliente.name} onChange={inputData}></input>
         <br></br>
-        Endereço:
+        Descrição do Serviço:
         <br></br>
-        <input type="text" name="adress" required placeholder="Endereço" value={dadosCliente.adress} onChange={inputData}></input>
+        <input type="text" name="adress" required placeholder="Preço do Serviço" value={dadosCliente.adress} onChange={inputData}></input>
         <br></br>
-        CPF
+        Preço:
         <br></br>
         <input type="text" name="cpf" required placeholder="CPF" value={dadosCliente.cpf} onChange={inputData}></input>
         <br></br>
@@ -196,4 +196,4 @@ function Clientes() {
     );
 }
 
-export default Clientes;
+export default Servicos;

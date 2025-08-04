@@ -2,19 +2,18 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import api from '../api/axiosConfig'; // Importando a configuração do axios
-function Clientes() {
+function Vendas() {
 
 
   /// metodo para carrer on load
   useEffect(()=>{
-    getAllClients();
+    getAllVendas();
   },[]);
   /// dados do formulário
-  const [dadosCliente,setDadosClient] = React.useState({
-    name:"",
-    adress:"",
-    cpf:"",
-    id:""
+  const [dadosVenda,setDadosVendas] = React.useState({
+    idCliente:"",
+    total:"",
+    id:"",
   });
 
   //resultado da consulta
@@ -22,8 +21,8 @@ function Clientes() {
 
   //setando os dados que o operador do sitema está digitando.
   const inputData = (e)=>{
-    setDadosClient({
-      ...dadosCliente,
+    setDadosVendas({
+      ...dadosVenda,
       [e.target.name]:e.target.value
     })
   }
@@ -32,16 +31,16 @@ function Clientes() {
   const saveData = async (e)  =>{
     e.preventDefault();
 
-    if (dadosCliente.id =="") {
+    if (dadosVenda.id =="") {
 
-    const resposta = await api.post('/clientes',
-      dadosCliente).then((res)=>{
+    const resposta = await api.post('/vendas',
+      dadosVenda).then((res)=>{
         console.log(res);
         if (res.status == 201){
-          setDadosClient({
-              name:"",
-              adress:"",
-              cpf:""
+          setDadosVendas({
+              id:"",
+              idCliente:"",
+              total:"",
           });
 
           alert("Salvo com sucesso");
@@ -59,15 +58,14 @@ function Clientes() {
     } else{
 
 
-       const resposta = await api.put('/cliente/'+dadosCliente.id,
-      dadosCliente).then((res)=>{
+       const resposta = await api.put('/vendas/'+dadosVenda.id,
+      dadosVenda).then((res)=>{
         console.log(res);
         if (res.status == 200){
-          setDadosClient({
-              name:"",
-              adress:"",
-              cpf:"",
-              id:""
+          setDadosVendas({
+              id:"",
+              idCliente:"",
+              total:"",
           });
           alert("Salvo com sucesso");
         }
@@ -86,23 +84,22 @@ function Clientes() {
 
           
     }
-      getAllClients();
+      getAllVendas();
   }
 
-  // chamando backand para trazer todos os usuários
-  const getAllClients = async (e)=>{
-    const consulta = await api.get("/clientes");
-    setResultado(consulta.data.clientes);
+  // chamando backend para trazer todos os usuários
+  const getAllVendas = async (e)=>{
+    const consulta = await api.get("/vendas");
+    setResultado(consulta.data.vendas);
   }
 
   const functionEdit = async (e)=>{
-     const getClient = await api.get("/cliente/"+e).then((res)=>{
-      //console.log(res.data.cliente);
-      setDadosClient({
-        name:res.data.cliente.name,
-        adress:res.data.cliente.adress,
-        cpf:res.data.cliente.cpf,
-        id: res.data.cliente.id
+     const getClient = await api.get("/vendas/"+e).then((res)=>{
+      console.log(res.data);
+      setDadosVendas({
+        idCliente:res.data.vendas.idCliente,
+        total:res.data.vendas.total,
+        id:res.data.vendas.id
       });
 
      }).catch((res)=>{
@@ -122,10 +119,10 @@ function Clientes() {
     }
 
     try {
-     const callDelete = api.delete("/cliente/"+e).then(
+     const callDelete = api.delete("/vendas/"+e).then(
       (res)=>{
         alert("Apagado com sucesso!!");
-        getAllClients()
+        getAllVendas()
       }
      )
   
@@ -137,50 +134,49 @@ function Clientes() {
   // pagina
     return(
          <div className="page-content">
-      <h1>Gerenciamento de Clientes</h1>
+      <h1>Gerenciamento de Vendas</h1>
       
 
       <form onSubmit={saveData}>
-        Nome:
+        Codigo:
         <br></br>
-        <input type="text" name="name" required placeholder="Nome" value={dadosCliente.name} onChange={inputData}></input>
         <br></br>
-        Endereço:
+        Cliente:
         <br></br>
-        <input type="text" name="adress" required placeholder="Endereço" value={dadosCliente.adress} onChange={inputData}></input>
+        <input type="text" name="idCliente" required placeholder="Id da Venda" value={dadosVenda.idCliente} onChange={inputData}></input>
         <br></br>
-        CPF
+        Preço:
         <br></br>
-        <input type="text" name="cpf" required placeholder="CPF" value={dadosCliente.cpf} onChange={inputData}></input>
+        <input type="text" name="total" required placeholder="Preço" value={dadosVenda.total} onChange={inputData}></input>
         <br></br>
         <button type="submit">Enviar</button>
-        <button type="button" onClick={getAllClients}>Listar</button>
+        <button type="button" onClick={getAllVendas}>Listar</button>
         <div className="tabela"> 
 
           <table style={{ border:1 , borderStyle:"double"}}>
             <thead>
               <tr>
-                <th>Nome</th>
-                <th>Endereço</th>
-                <th>CPF</th>
+                <th>Id Venda</th>
+                <th>Id Cliente</th>
+                <th>Preço</th>
                 <th>Editar</th>
                 <th>Excluir</th>
               </tr>
             </thead>
             <tbody>
-              {resultado && resultado.map((cliente, index) => (
+              {resultado && resultado.map((vendas, index) => (
                     <tr key={index}>
-                        <td>{cliente.name}</td>
-                        <td>{cliente.adress}</td>
-                        <td>{cliente.cpf}</td>
+                        <td>{vendas.id}</td>
+                        <td>{vendas.idCliente}</td>
+                        <td>{vendas.total}</td>
                        
                         <td><button type="button"  onClick={(e)=>{
-                          functionEdit(cliente.id)
+                          functionEdit(vendas.id)
 
                         }}>Editar</button></td>
                         <td><button type="button" 
                         onClick={(e)=>{
-                          removeFunct(cliente.id)
+                          removeFunct(vendas.id)
                         }}
                         >Excluir</button></td>
                          
@@ -196,4 +192,4 @@ function Clientes() {
     );
 }
 
-export default Clientes;
+export default Vendas;
